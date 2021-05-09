@@ -1,0 +1,6 @@
+{
+  "jwt": {
+    "accessTokenSecretKey": "A+ULdEFFoDeg4YqYxmsFVVjdbhk92Ah4ikqwRX7HM3s=",
+    "accessTokenExpiry": "1 day"
+  }
+}
