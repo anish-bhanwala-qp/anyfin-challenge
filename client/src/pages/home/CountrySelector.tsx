@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Country } from "../../typings";
+import styles from "./CountrySelector.module.css";
 
 interface Props {
   countries: Array<Country>;
@@ -11,7 +12,9 @@ interface ListItemProps {
   onClick: (country: Country) => void;
 }
 const ListItem = ({ country, onClick }: ListItemProps) => {
-  const onClickHandler = () => onClick(country);
+  const onClickHandler = () => {
+    onClick(country);
+  };
   return <li onClick={onClickHandler}>{country.name}</li>;
 };
 
@@ -31,7 +34,7 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
 
   useEffect(() => {
     if (!query) {
-      setFilteredCountries([]);
+      setFilteredCountries(countries);
       return;
     }
 
@@ -47,22 +50,25 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       <input
+        className={styles.queryInput}
         type="text"
         placeholder="Enter country name"
         value={query}
         onChange={queryInputHandler}
       />
-      <ul>
-        {filteredCountries.map((country) => (
-          <ListItem
-            key={country.name}
-            country={country}
-            onClick={countrySelectedHandler}
-          />
-        ))}
-      </ul>
+      <div className={styles.listContainer}>
+        <ul className={styles.list}>
+          {filteredCountries.map((country) => (
+            <ListItem
+              key={country.name}
+              country={country}
+              onClick={countrySelectedHandler}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { Country } from "../../typings";
+import styles from "./SelectedCountries.module.css";
 
 interface Props {
   selectedCountries: Array<Country>;
@@ -34,8 +35,8 @@ export const SelectedCountries = ({
   );
 
   return (
-    <div>
-      <ul>
+    <div className={styles.container}>
+      <ul className={styles.list}>
         {selectedCountries.map((country) => (
           <ListItem
             key={country.name}

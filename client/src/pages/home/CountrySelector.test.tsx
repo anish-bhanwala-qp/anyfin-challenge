@@ -79,7 +79,7 @@ describe("CountrySelector", () => {
     expect(listItemsWithAl).toHaveLength(2);
   });
 
-  test("renders no countries input is cleared", async () => {
+  test("renders all countries input is cleared", async () => {
     renderCountrySelector();
     const nameInput = screen.getByPlaceholderText(/enter country name/i);
 
@@ -89,8 +89,8 @@ describe("CountrySelector", () => {
 
     // Clearing
     userEvent.clear(nameInput);
-    const noListItems = screen.queryAllByRole("listitem");
-    expect(noListItems).toHaveLength(0);
+    const allListItems = screen.getAllByRole("listitem");
+    expect(allListItems).toHaveLength(countriesMockData.length);
   });
 
   test("does callback with selected country and resets input", async () => {
