@@ -1,10 +1,8 @@
-import { createTestClient } from "apollo-server-testing";
-import jwt from "jsonwebtoken";
-import config from "config";
 import createTestServer from "../../tests/config/createTestServer";
 import { context } from "../context";
 import { CountryService } from "../services/CountryService";
 import { UserModel } from "../models/UserModel";
+import { getAuthenticatedRequestMock } from "../../tests/testUtil";
 
 jest.mock("../models/UserModel");
 
@@ -25,13 +23,19 @@ const USER_PROFILE_QUERY = `
     }
 `;
 
-describe("countries query", () => {
-  test("fetches all countries list", async () => {
+describe("Query", () => {
+  test("countries:query fetches all countries list", async () => {
+    const jwtPayload = { email: "a@a.com" };
+    UserModel.findByEmail.mockReturnValueOnce(jwtPayload);
+    const requestMock = getAuthenticatedRequestMock(jwtPayload);
+
+    const contextPipeline = () => {
+      return { ...context({ req: requestMock }), countryService };
+    };
+
     const countryService = new CountryService();
     const { query } = createTestServer({
-      context: {
-        countryService,
-      },
+      context: contextPipeline,
     });
 
     const mockFetchAll = jest.spyOn(countryService, "fetchAll");
@@ -50,30 +54,35 @@ describe("countries query", () => {
     });
   });
 
-  test("authenticated", async () => {
-    const jwtPayload = { email: "a@a.com" };
-    const secret = config.get("jwt.accessTokenSecretKey");
-    const token = jwt.sign(jwtPayload, secret);
+  describe("Authentication for queries", () => {
+    test("userProile:query query should succeed for authenticated user", async () => {
+      const jwtPayload = { email: "a@a.com" };
+      UserModel.findByEmail.mockReturnValueOnce(jwtPayload);
+      const requestMock = getAuthenticatedRequestMock(jwtPayload);
 
-    UserModel.findByEmail.mockReturnValueOnce(jwtPayload);
+      const contextPipeline = () => context({ req: requestMock });
 
-    const reqMock = {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    };
-    const contextPipeline = () => context({ req: reqMock });
+      const { query } = createTestServer({
+        context: contextPipeline,
+      });
 
-    const { query } = createTestServer({
-      context: contextPipeline,
+      const response = await query({
+        query: USER_PROFILE_QUERY,
+      });
+
+      expect(response.data).toEqual({
+        userProfile: jwtPayload,
+      });
     });
 
-    const response = await query({
-      query: USER_PROFILE_QUERY,
-    });
+    test("userProile:query query should fail for unauthenticated user", async () => {
+      const { query } = createTestServer();
 
-    expect(response.data).toEqual({
-      userProfile: jwtPayload,
+      const response = await query({
+        query: USER_PROFILE_QUERY,
+      });
+
+      expect(response.errors[0].message).toEqual("You must be logged in");
     });
   });
 });
