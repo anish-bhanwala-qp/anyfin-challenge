@@ -5,7 +5,7 @@ import { User } from "../typings/User";
 
 export const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+    login(data: { email: $email, password: $password }) {
       token
     }
   }
@@ -18,8 +18,10 @@ interface Props {
 export const LoginPage = ({ onLogin }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
-    onCompleted: (login) => onLogin(login.token),
+  const [login, { loading, error, data }] = useMutation(LOGIN_MUTATION, {
+    onCompleted: (data) => {
+      onLogin(data.login.token);
+    },
   });
 
   const submitHandler = (event: React.SyntheticEvent) => {

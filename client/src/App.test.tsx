@@ -46,7 +46,7 @@ describe("App", () => {
           query: LOGIN_MUTATION,
           variables: expectedCredentials,
         },
-        result: { data: loginResponse },
+        result: { data: { login: loginResponse } },
       },
     ];
 
