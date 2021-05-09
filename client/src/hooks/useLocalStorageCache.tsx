@@ -43,7 +43,12 @@ export function useLocalStorageCache<T>({
   decoder = JSON.parse,
   encoder = JSON.stringify,
 }: Props<T>): ReturnType<T> {
-  const [value, setValue] = useState<T | null>(null);
+  const initialValue = loadValueFromLocalStorage(
+    key,
+    cacheExpiryCheker,
+    decoder,
+  );
+  const [value, setValue] = useState<T | null>(initialValue);
   useEffect(() => {
     const value = loadValueFromLocalStorage(key, cacheExpiryCheker, decoder);
     setValue(value);

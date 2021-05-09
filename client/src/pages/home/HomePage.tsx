@@ -48,7 +48,7 @@ export const HomePage = () => {
 
   let content = (
     <div>
-      <input type="text" placeholder="Enter country name" />;
+      <input type="text" placeholder="Enter country name" />
       {countryCache && countryCache.countries.map((c) => <div>{c.name}</div>)}
     </div>
   );
