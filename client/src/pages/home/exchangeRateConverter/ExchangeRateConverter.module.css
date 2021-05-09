@@ -3,7 +3,9 @@
     margin: 50px auto;
 }
 
-.countryList {}
+.countryList {
+    margin-top: 20px;
+}
 
 .countryList>li {
     padding: 8px 16px;

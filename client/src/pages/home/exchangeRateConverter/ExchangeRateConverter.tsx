@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { Loading } from "../../../components/Loading";
 import { useLocalStorageCache } from "../../../hooks/useLocalStorageCache";
@@ -57,6 +57,10 @@ const convertToSek = (
   });
 };
 
+const getValidatedAmount = (amount: number) => {
+  return Number.isNaN(amount) || amount < 0 ? 0 : amount;
+};
+
 export const ExchangeRateConverter = ({
   countries,
   onCountryRemoved,
@@ -79,6 +83,12 @@ export const ExchangeRateConverter = ({
     },
   });
 
+  const [inputAmount, setInputAmount] = useState(1);
+
+  const inputAmountHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputAmount(Number(event.target.value));
+  };
+
   const countryRemovedHandler = useCallback(
     (country) => {
       onCountryRemoved(country);
@@ -86,16 +96,25 @@ export const ExchangeRateConverter = ({
     [onCountryRemoved],
   );
 
-  let content = (
-    <>
-      {exchangeRateCache?.exchangeRates && (
+  let content = <></>;
+  if (exchangeRateCache?.exchangeRates && countries.length > 0) {
+    content = (
+      <>
+        <input
+          type="number"
+          onChange={inputAmountHandler}
+          value={inputAmount}
+          min={1}
+          placeholder="Enter amount to convert"
+        />
+        SEK
         <ul className={styles.countryList}>
           {countries.map((country) => (
             <SelectedCountryRow
               key={country.name}
               country={country}
               convertedRates={convertToSek(
-                1,
+                getValidatedAmount(inputAmount),
                 country.currencies,
                 exchangeRateCache.exchangeRates,
               )}
@@ -103,9 +122,9 @@ export const ExchangeRateConverter = ({
             />
           ))}
         </ul>
-      )}
-    </>
-  );
+      </>
+    );
+  }
   if (loading) {
     content = <Loading />;
   } else if (error) {
