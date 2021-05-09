@@ -5,8 +5,9 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { Loading } from "../../components/Loading";
 import { useLocalStorageCache } from "../../hooks/useLocalStorageCache";
 import { Country, CountryCache } from "../../typings";
-import { CountrySelector } from "./CountrySelector";
-import { SelectedCountries } from "./SelectedCountries";
+import { CountrySelector } from "./countries/CountrySelector";
+import { SelectedCountries } from "./countries/SelectedCountries";
+import { ExchangeRateConverter } from "./exchangeRateConverter/ExchangeRateConverter";
 
 export const COUNTRIES_QUERY = gql`
   query GetCountries {
@@ -76,8 +77,9 @@ export const HomePage = () => {
         countries={availableCountries}
         onCountrySelected={countrySelectedHandler}
       />
-      <SelectedCountries
-        selectedCountries={selectedCountries}
+
+      <ExchangeRateConverter
+        countries={selectedCountries}
         onCountryRemoved={countryRemovedHandler}
       />
     </div>

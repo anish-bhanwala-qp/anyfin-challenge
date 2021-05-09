@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { Country } from "../../typings";
+import { Country } from "../../../typings";
 import styles from "./SelectedCountries.module.css";
 
 interface Props {

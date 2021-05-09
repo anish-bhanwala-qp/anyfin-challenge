@@ -18,3 +18,13 @@ export interface CountryCache {
   lastUpdatedTs: number;
   countries: Array<Country>;
 }
+
+export interface ExchnageRate {
+  name: string;
+  rate: number;
+}
+
+export interface ExchangeRateCache {
+  lastUpdatedTs: number;
+  exchangeRates: Array<ExchnageRate>;
+}

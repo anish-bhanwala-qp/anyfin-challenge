@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Country } from "../../typings";
+import { Country } from "../../../typings";
 import styles from "./CountrySelector.module.css";
 
 interface Props {
@@ -51,8 +51,14 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
     setQuery(event.target.value);
   };
 
-  const onFocusHandler = (e: React.FocusEvent<HTMLInputElement>) => {
+  const onFocusHandler = () => {
     setDisplayList(true);
+  };
+
+  const onBlurHandler = () => {
+    setTimeout(() => {
+      setDisplayList(false);
+    }, 100);
   };
 
   return (
@@ -64,6 +70,7 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
         value={query}
         onChange={queryInputHandler}
         onFocus={onFocusHandler}
+        onBlur={onBlurHandler}
       />
       <div
         className={styles.listContainer}

@@ -1,0 +1,29 @@
+.container {
+    border-bottom: 1px solid #ccc;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ratesList {
+    font-size: 14px;
+    padding-left: 16px;
+    list-style: circle;
+}
+
+.btn {
+    padding: 4px 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.btn:hover,
+.btn:active {
+    outline: none;
+    border: 1px solid coral;
+    transform: scale(0.98);
+}

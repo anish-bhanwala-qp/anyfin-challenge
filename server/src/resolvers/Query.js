@@ -5,8 +5,8 @@ export const Query = {
     return countryService.fetchAll();
   }),
   exchangeRates: protectResolver(
-    async (parent, args, { exchngeRateService }, info) => {
-      return exchngeRateService.getRatesFor(args.currencies);
+    async (parent, args, { exchangeRateService }, info) => {
+      return exchangeRateService.getRatesFor(args.currencies);
     },
   ),
   userProfile: protectResolver(async (parent, args, { user }, info) => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API_KEY = "06fb673a3339452272808d5c3b44935d";
-const BASE_CURRENCY = "EUR";
+const SEK_CODE = "SEK";
 
 const sample = {
   success: true,
@@ -21,10 +21,21 @@ export class ExchangeRateService {
     this.cacheInterval = cacheInterval;
   }
 
+  // Fixer api base currency is EUR
   #formatApiResponse(data) {
-    return Object.entries(data.rates).map(([currency, rate]) => {
-      return { name: currency, rate };
-    });
+    const sekPrice = data.rates[SEK_CODE];
+    if (sekPrice == null) {
+      throw new Error("SEK currency not found");
+    }
+    const adjustRate = ([currency, rate]) => {
+      return [currency, rate / sekPrice];
+    };
+
+    return Object.entries(data.rates)
+      .map(adjustRate)
+      .map(([currency, rate]) => {
+        return { name: currency, rate };
+      });
   }
 
   isCacheExpired() {
@@ -35,7 +46,7 @@ export class ExchangeRateService {
 
   #filterByCurrencies(currencies) {
     return {
-      base: BASE_CURRENCY,
+      base: SEK_CODE,
       rates: this.#exchangeRatesCache.rates
         .filter(({ name }) => {
           if (!currencies) {
