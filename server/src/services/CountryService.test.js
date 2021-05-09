@@ -17,6 +17,10 @@ const countriesData = [
   },
 ];
 
+const apiResponse = {
+  data: countriesData,
+};
+
 const originalTimeout = axios.defaults.timeout;
 
 describe("CountryService", () => {
@@ -26,7 +30,7 @@ describe("CountryService", () => {
   });
 
   test("calling fetchAll fetches list from third-party API", async () => {
-    axios.get.mockImplementationOnce(() => Promise.resolve(countriesData));
+    axios.get.mockImplementationOnce(() => Promise.resolve(apiResponse));
 
     const countries = await new CountryService().fetchAll();
 
@@ -35,7 +39,7 @@ describe("CountryService", () => {
 
   test("countries list is cached and subsequent calls don't call third-party API", async () => {
     //   Mock first call so data gets cached
-    axios.get.mockImplementationOnce(() => Promise.resolve(countriesData));
+    axios.get.mockImplementationOnce(() => Promise.resolve(apiResponse));
 
     const countryService = new CountryService();
     await countryService.fetchAll();
@@ -58,7 +62,7 @@ describe("CountryService", () => {
       // Ignore
     }
 
-    const mockGetSuccess = jest.fn(() => Promise.resolve(countriesData));
+    const mockGetSuccess = jest.fn(() => Promise.resolve(apiResponse));
     axios.get.mockImplementationOnce(mockGetSuccess);
     try {
       await countryService.fetchAll();

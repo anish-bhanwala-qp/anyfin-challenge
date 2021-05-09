@@ -1,25 +1,37 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Loading } from "./components/Loading";
-import { HomePage } from "./pages/HomePage";
-import { LoginPage } from "./pages/LoginPage";
-import { getUser } from "./services/AuthService";
-import { User } from "./typings/User";
+import { useLocalStorageCache } from "./hooks/useLocalStorageCache";
+import { HomePage } from "./pages/home/HomePage";
+import { LoginPage } from "./pages/login/LoginPage";
+import { getUser, JWT_KEY, isTokenExpired } from "./services/AuthService";
+import { User } from "./typings";
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
+  const [accessToken, setAccessToken] = useLocalStorageCache<string>({
+    key: JWT_KEY,
+    cacheExpiryCheker: isTokenExpired,
+    decoder: (value) => value,
+    encoder: (value) => value,
+  });
+
+  const loginHandler = (accessToken: string) => {
+    setAccessToken(accessToken);
+  };
 
   useEffect(() => {
-    const loggedInUser = getUser();
-    if (loggedInUser) {
-      setUser(loggedInUser);
+    if (accessToken) {
+      setUser(getUser(accessToken));
     }
 
-    setLoading(false);
-  }, []);
+    if (loading) {
+      setLoading(false);
+    }
+  }, [accessToken]);
 
-  let content = <LoginPage onLogin={setUser} />;
+  let content = <LoginPage onLogin={loginHandler} />;
   if (loading) {
     content = <Loading />;
   } else if (user) {

@@ -1,16 +1,23 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import App from "./App";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import userEvent from "@testing-library/user-event";
-import { LOGIN_MUTATION } from "./pages/LoginPage";
 import { loginUser } from "./services/AuthService";
+import { LOGIN_MUTATION } from "./pages/login/LoginPage";
+import { COUNTRIES_QUERY } from "./pages/home/HomePage";
 
 const validJWt =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYS5jb20iLCJpYXQiOjE1" +
   "MTYyMzkwMjJ9.4IQO5G5d_SJuWM8l80GiORMIK8mR8epLhN-tS0ozmko";
 
-const renderApp = (mocks: Array<MockedResponse> = []) => {
+const countriesQueryMock = {
+  request: {
+    query: COUNTRIES_QUERY,
+  },
+  result: { data: { countries: [] } },
+};
+
+const renderApp = (mocks: Array<MockedResponse> = [countriesQueryMock]) => {
   render(
     <MockedProvider mocks={mocks}>
       <App />
@@ -48,6 +55,7 @@ describe("App", () => {
         },
         result: { data: { login: loginResponse } },
       },
+      countriesQueryMock,
     ];
 
     renderApp(mocks);

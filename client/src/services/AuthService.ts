@@ -1,9 +1,9 @@
 import jwtDecoder from "jwt-decode";
-import { User } from "../typings/User";
+import { User } from "../typings";
 
-const JWT_KEY = "accessToken";
+export const JWT_KEY = "ac_access_token";
 
-const isTokenExpired = (accessToken: string) => {
+export const isTokenExpired = (accessToken: string) => {
   try {
     const decoded: any = jwtDecoder(accessToken);
     return decoded.exp < Date.now() / 1000;
@@ -32,11 +32,6 @@ export const removeAccessToken = () => {
   localStorage.removeItem(JWT_KEY);
 };
 
-export const getUser = (): User | null => {
-  const accessToken = getAccessToken();
-  if (accessToken) {
-    return jwtDecoder(accessToken);
-  }
-
-  return null;
+export const getUser = (accessToken: string): User => {
+  return jwtDecoder(accessToken);
 };

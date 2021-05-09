@@ -1,9 +1,7 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import userEvent from "@testing-library/user-event";
 import { LoginPage, LOGIN_MUTATION } from "./LoginPage";
-import { getAccessToken, loginUser } from "../services/AuthService";
 import { GraphQLError } from "graphql";
 
 const validJWt =

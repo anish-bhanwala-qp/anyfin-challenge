@@ -14,9 +14,12 @@ export class CountryService {
       .get("https://restcountries.eu/rest/v2/all", {
         timeout,
       })
-      .then((data) => {
+      .then(({ data }) => {
         this.countriesCache = data.map(({ name, population, currencies }) => {
-          return { name, population, currencies };
+          const sanitizedCurrencies = currencies.filter((currency) => {
+            return currency.name && currency.symbol && currency.code;
+          });
+          return { name, population, currencies: sanitizedCurrencies };
         });
 
         return this.countriesCache;

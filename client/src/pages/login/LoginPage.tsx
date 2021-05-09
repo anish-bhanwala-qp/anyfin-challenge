@@ -1,8 +1,7 @@
 import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
-import React, { useEffect, useState } from "react";
-import { ErrorMessage } from "../components/ErrorMessage";
-import { User } from "../typings/User";
+import React, { useState } from "react";
+import { ErrorMessage } from "../../components/ErrorMessage";
 
 export const LOGIN_MUTATION = gql`
   mutation Login($email: String!, $password: String!) {
@@ -13,7 +12,7 @@ export const LOGIN_MUTATION = gql`
 `;
 
 interface Props {
-  onLogin: (user: User) => void;
+  onLogin: (accessToken: string) => void;
 }
 
 export const LoginPage = ({ onLogin }: Props) => {
