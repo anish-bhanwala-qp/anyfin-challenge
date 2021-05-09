@@ -1,6 +1,7 @@
 import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import React, { useEffect, useState } from "react";
+import { ErrorMessage } from "../components/ErrorMessage";
 import { User } from "../typings/User";
 
 export const LOGIN_MUTATION = gql`
@@ -27,7 +28,9 @@ export const LoginPage = ({ onLogin }: Props) => {
   const submitHandler = (event: React.SyntheticEvent) => {
     event.preventDefault();
 
-    login({ variables: { email, password } });
+    login({ variables: { email, password } }).catch((error) => {
+      // Ignore
+    });
   };
 
   let status = <p></p>;
@@ -35,7 +38,7 @@ export const LoginPage = ({ onLogin }: Props) => {
     status = <p>Loading...</p>;
   }
   if (error) {
-    status = <p>Oops error trying to login.</p>;
+    status = <ErrorMessage message={error.message} />;
   }
 
   return (
