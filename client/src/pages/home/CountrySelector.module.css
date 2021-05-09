@@ -17,8 +17,13 @@
     border: 1px solid coral;
 }
 
+.queryInput:focus+.listContainer {
+    display: block;
+}
+
 .listContainer {
     position: relative;
+    display: none;
 }
 
 .list {

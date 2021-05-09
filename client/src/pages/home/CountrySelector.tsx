@@ -23,11 +23,13 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
     [],
   );
   const [query, setQuery] = useState("");
+  const [displayList, setDisplayList] = useState(false);
 
   const countrySelectedHandler = useCallback(
     (country) => {
       onCountrySelected(country);
       setQuery("");
+      setDisplayList(false);
     },
     [onCountrySelected],
   );
@@ -49,6 +51,10 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
     setQuery(event.target.value);
   };
 
+  const onFocusHandler = (e: React.FocusEvent<HTMLInputElement>) => {
+    setDisplayList(true);
+  };
+
   return (
     <div className={styles.container}>
       <input
@@ -57,8 +63,12 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
         placeholder="Enter country name"
         value={query}
         onChange={queryInputHandler}
+        onFocus={onFocusHandler}
       />
-      <div className={styles.listContainer}>
+      <div
+        className={styles.listContainer}
+        style={{ display: displayList ? "block" : "none" }}
+      >
         <ul className={styles.list}>
           {filteredCountries.map((country) => (
             <ListItem
