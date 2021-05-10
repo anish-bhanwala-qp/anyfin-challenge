@@ -23,19 +23,27 @@ const USER_PROFILE_QUERY = `
     }
 `;
 
+const createMockLoginTestServer = ({
+  user = { email: "a@a.com" },
+  services = {},
+} = {}) => {
+  UserModel.findByEmail.mockReturnValueOnce(user);
+  const requestMock = getAuthenticatedRequestMock(user);
+
+  const contextPipeline = () => {
+    return { ...context({ req: requestMock }), ...services };
+  };
+
+  return createTestServer({
+    context: contextPipeline,
+  });
+};
+
 describe("Query", () => {
   test("countries:query fetches all countries list", async () => {
-    const jwtPayload = { email: "a@a.com" };
-    UserModel.findByEmail.mockReturnValueOnce(jwtPayload);
-    const requestMock = getAuthenticatedRequestMock(jwtPayload);
-
-    const contextPipeline = () => {
-      return { ...context({ req: requestMock }), countryService };
-    };
-
     const countryService = new CountryService();
-    const { query } = createTestServer({
-      context: contextPipeline,
+    const { query } = createMockLoginTestServer({
+      services: { countryService },
     });
 
     const mockFetchAll = jest.spyOn(countryService, "fetchAll");
@@ -57,13 +65,8 @@ describe("Query", () => {
   describe("Authentication for queries", () => {
     test("userProile:query query should succeed for authenticated user", async () => {
       const jwtPayload = { email: "a@a.com" };
-      UserModel.findByEmail.mockReturnValueOnce(jwtPayload);
-      const requestMock = getAuthenticatedRequestMock(jwtPayload);
-
-      const contextPipeline = () => context({ req: requestMock });
-
-      const { query } = createTestServer({
-        context: contextPipeline,
+      const { query } = createMockLoginTestServer({
+        user: jwtPayload,
       });
 
       const response = await query({
@@ -83,6 +86,40 @@ describe("Query", () => {
       });
 
       expect(response.errors[0].message).toEqual("You must be logged in");
+    });
+  });
+
+  describe("rate limiting queries", () => {
+    test("userProile:query return error message if more then 30 queries are sent in a minute", async () => {
+      const { query } = createMockLoginTestServer();
+
+      for (let i = 0; i < 30; i++) {
+        await query({
+          query: USER_PROFILE_QUERY,
+        });
+      }
+
+      const response = await query({
+        query: USER_PROFILE_QUERY,
+      });
+      expect(response.errors[0].message).toBe(
+        "You are trying to access 'userProfile' too often",
+      );
+    });
+
+    test("userProile:query does not rate limit if 30 queries are sent in a minute", async () => {
+      const { query } = createMockLoginTestServer();
+
+      for (let i = 0; i < 28; i++) {
+        await query({
+          query: USER_PROFILE_QUERY,
+        });
+      }
+
+      const response = await query({
+        query: USER_PROFILE_QUERY,
+      });
+      expect(response.data).toEqual({ userProfile: { email: "a@a.com" } });
     });
   });
 });

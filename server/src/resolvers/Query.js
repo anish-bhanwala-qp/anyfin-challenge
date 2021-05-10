@@ -1,15 +1,15 @@
-import { protectResolver } from "../utils";
+import { authenticate } from "../utils";
 
 export const Query = {
-  countries: protectResolver(async (parent, args, { countryService }, info) => {
+  countries: authenticate(async (parent, args, { countryService }, info) => {
     return countryService.fetchAll();
   }),
-  exchangeRates: protectResolver(
+  exchangeRates: authenticate(
     async (parent, args, { exchangeRateService }, info) => {
       return exchangeRateService.getRatesFor(args.currencies);
     },
   ),
-  userProfile: protectResolver(async (parent, args, { user }, info) => {
+  userProfile: authenticate(async (parent, args, { user }, info) => {
     return user;
   }),
 };

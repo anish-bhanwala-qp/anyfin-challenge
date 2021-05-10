@@ -23,6 +23,7 @@ export class AuthService {
     }
 
     const isMatch = await brcypt.compare(password, user.password);
+
     if (!isMatch) {
       throw new ValidationError("Invalid email or password");
     }
@@ -36,8 +37,11 @@ export class AuthService {
     const authorization = request?.headers?.authorization;
     if (authorization) {
       const token = authorization.replace("Bearer ", "");
-      const user = decodeToken(token);
-      return user;
+      try {
+        return decodeToken(token);
+      } catch (err) {
+        // Invalid token
+      }
     }
 
     return null;
