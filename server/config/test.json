@@ -4,5 +4,5 @@
     "accessTokenExpiry": "2s"
   },
   "exchangeRateRefreshInterval": 60000,
-  "fixerApiKey": "06fb673a3339452272808d5c3b44935d"
+  "fixerApiKey": "bdaa388ee0fb45908762e9f6bc309dc1"
 }

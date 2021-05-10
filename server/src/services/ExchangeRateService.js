@@ -32,7 +32,7 @@ export class ExchangeRateService {
     rates: [],
   };
 
-  constructor(cacheInterval = 1000) {
+  constructor(cacheInterval = exchangeRateRefreshInterval) {
     this.cacheInterval = cacheInterval;
 
     setInterval(this.#forceRefreshCache, exchangeRateRefreshInterval).unref();
@@ -92,6 +92,8 @@ export class ExchangeRateService {
     if (!this.isCacheExpired()) {
       return this.#filterByCurrencies(currencies);
     }
+
+    console.log("ExchangeRateService cache refreshed");
 
     return axios
       .get("http://data.fixer.io/api/latest", {
