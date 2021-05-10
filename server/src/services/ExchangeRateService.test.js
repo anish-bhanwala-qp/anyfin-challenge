@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ExchangeRateService } from "./ExchangeRateService";
+import config from "config";
 
 jest.mock("axios");
 
@@ -19,6 +20,8 @@ const expectedRatesData = {
     { name: "SEK", rate: 1 },
   ],
 };
+
+const exchangeRateRefreshInterval = config.get("exchangeRateRefreshInterval");
 
 describe("ExchangeRateService", () => {
   let exchangeRateService;
@@ -87,17 +90,20 @@ describe("ExchangeRateService", () => {
       expect(rates).toEqual(expectedRatesData);
     });
 
-    /* test("getRatesFor should return rates only for given currencies", async () => {
+    test("getRatesFor doesn't cache error response", async () => {
+      axios.get.mockImplementationOnce(() =>
+        Promise.reject({ rates: { EUR: 1 } }),
+      );
+      try {
+        await exchangeRateService.getRatesFor();
+      } catch (err) {
+        // Ignore
+      }
+
       axios.get.mockImplementationOnce(() => Promise.resolve(apiResponse));
-      const rates = await exchangeRateService.getRatesFor(["GBP", "JPY"]);
-      expect(rates).toEqual({
-        base: "EUR",
-        rates: [
-          { name: "GBP", rate: 0.08 },
-          { name: "JPY", rate: 13.2 },
-        ],
-      });
-    }); */
+      const rates = await exchangeRateService.getRatesFor();
+      expect(rates).toEqual(expectedRatesData);
+    });
 
     test("getRatesFor doesn't cache error response", async () => {
       axios.get.mockImplementationOnce(() =>
@@ -113,5 +119,22 @@ describe("ExchangeRateService", () => {
       const rates = await exchangeRateService.getRatesFor();
       expect(rates).toEqual(expectedRatesData);
     });
+  });
+
+  test("service refreshes cache after every'exchangeRateRefreshInterval'", async (done) => {
+    jest.useFakeTimers();
+    exchangeRateService = new ExchangeRateService();
+
+    axios.get.mockImplementationOnce(() => Promise.resolve(apiResponse));
+    await exchangeRateService.getRatesFor();
+
+    // advance the timer by exchangeRateRefreshInterval to force cache refresh
+    const mockGet = jest.fn(() => Promise.resolve(apiResponse));
+    axios.get.mockImplementationOnce(mockGet);
+    expect(mockGet).not.toBeCalled();
+    jest.advanceTimersByTime(exchangeRateRefreshInterval + 1000);
+
+    expect(mockGet).toHaveBeenCalled();
+    done();
   });
 });

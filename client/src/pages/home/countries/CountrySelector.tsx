@@ -68,6 +68,7 @@ export const CountrySelector = ({ countries, onCountrySelected }: Props) => {
         type="text"
         placeholder="Enter country name"
         value={query}
+        autoFocus
         onChange={queryInputHandler}
         onFocus={onFocusHandler}
         onBlur={onBlurHandler}

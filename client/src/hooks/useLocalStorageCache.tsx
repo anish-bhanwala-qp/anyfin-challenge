@@ -37,6 +37,12 @@ function loadValueFromLocalStorage<T>(
   return null;
 }
 
+/* 
+  - On first load:
+    1. Try to load value from local storage for given 'key' and 'decoder'
+    2. Check if the value is expired using cacheExpiryCheker.
+  - If setValueHandler is called use 'encoder' to save value to localStorage
+*/
 export function useLocalStorageCache<T>({
   key,
   cacheExpiryCheker,
@@ -52,6 +58,7 @@ export function useLocalStorageCache<T>({
   useEffect(() => {
     const value = loadValueFromLocalStorage(key, cacheExpiryCheker, decoder);
     setValue(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
   const setValueHandler = (value: T) => {

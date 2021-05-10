@@ -3,11 +3,11 @@ import gql from "graphql-tag";
 import { useMemo, useState } from "react";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { Loading } from "../../components/Loading";
+import { COUNTRIES_CACHE_EXPIRY } from "../../config";
 import { useLocalStorageCache } from "../../hooks/useLocalStorageCache";
 import { Country, CountryCache } from "../../typings";
 import { CountrySelector } from "./countries/CountrySelector";
-import { SelectedCountries } from "./countries/SelectedCountries";
-import { ExchangeRateConverter } from "./exchangeRateConverter/ExchangeRateConverter";
+import { ExchangeRateConverter } from "./exchangeRate/ExchangeRateConverter";
 
 export const COUNTRIES_QUERY = gql`
   query GetCountries {
@@ -24,14 +24,11 @@ export const COUNTRIES_QUERY = gql`
 `;
 
 export const KEY_COUNTRIES = "ac_countries";
-// one day expiry
-const COUNTRTY_EXPIRY_DURATION = 24 * 60 * 60 * 1000;
 
 const checkTimestampExpiry = (countryCache: CountryCache) => {
   const lastUpdatedTs = countryCache?.lastUpdatedTs;
   return (
-    lastUpdatedTs != null &&
-    Date.now() - lastUpdatedTs > COUNTRTY_EXPIRY_DURATION
+    lastUpdatedTs != null && Date.now() - lastUpdatedTs > COUNTRIES_CACHE_EXPIRY
   );
 };
 
@@ -72,7 +69,7 @@ export const HomePage = () => {
   }, [selectedCountries, countryCache?.countries]);
 
   let content = (
-    <div>
+    <>
       <CountrySelector
         countries={availableCountries}
         onCountrySelected={countrySelectedHandler}
@@ -82,7 +79,7 @@ export const HomePage = () => {
         countries={selectedCountries}
         onCountryRemoved={countryRemovedHandler}
       />
-    </div>
+    </>
   );
   if (loading) {
     content = <Loading />;

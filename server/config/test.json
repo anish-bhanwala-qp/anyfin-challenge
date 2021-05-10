@@ -2,5 +2,7 @@
   "jwt": {
     "accessTokenSecretKey": "A+ULdEFFoDeg4YqYxmsFVVjdbhk92Ah4ikqwRX7HM3s=",
     "accessTokenExpiry": "2s"
-  }
+  },
+  "exchangeRateRefreshInterval": 60000,
+  "fixerApiKey": "06fb673a3339452272808d5c3b44935d"
 }

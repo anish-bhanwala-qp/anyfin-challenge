@@ -3,7 +3,7 @@ import { gql } from "apollo-server";
 const typeDefs = gql`
   type Query {
     countries: [Country]!
-    exchangeRates(currencies: [String!]): ExchangeRatePayload!
+    exchangeRates: ExchangeRatePayload!
     userProfile: userProfilePayload!
   }
 

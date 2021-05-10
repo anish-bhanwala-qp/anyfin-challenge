@@ -26,9 +26,7 @@ function App() {
       setUser(getUser(accessToken));
     }
 
-    if (loading) {
-      setLoading(false);
-    }
+    setLoading(false);
   }, [accessToken]);
 
   let content = <LoginPage onLogin={loginHandler} />;

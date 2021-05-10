@@ -12,6 +12,7 @@ import {
 } from "../../../typings";
 import { SelectedCountryRow } from "./SelectedCountryRow";
 import styles from "./ExchangeRateConverter.module.css";
+import { EXCHANGE_RATES_CACHE_EXPIRY } from "../../../config";
 
 export const EXCHANGE_RATES_QUERY = gql`
   query GetExchangeRates {
@@ -25,13 +26,12 @@ export const EXCHANGE_RATES_QUERY = gql`
 `;
 
 export const KEY_EXCHANGE_RATES = "ac_exchange_rates";
-const EXCHNAGE_RATE_EXPIRY_DURATION = 60 * 1000;
 
 const checkTimestampExpiry = (exchangeRateCache: ExchangeRateCache) => {
   const lastUpdatedTs = exchangeRateCache?.lastUpdatedTs;
   return (
     lastUpdatedTs != null &&
-    Date.now() - lastUpdatedTs > EXCHNAGE_RATE_EXPIRY_DURATION
+    Date.now() - lastUpdatedTs > EXCHANGE_RATES_CACHE_EXPIRY
   );
 };
 
