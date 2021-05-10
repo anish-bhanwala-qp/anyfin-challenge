@@ -16,6 +16,16 @@ const SEK_CODE = "SEK";
   }; 
 */
 
+/* 
+  The ExchangeRateService service caches exchange-rates received from
+  fixer api. Right now cache is refershed in two ways:
+    1. Whenever a client calls we check if cache is expired
+      - This approach is no longer required as cache is refreshed 
+        using setInterval right now. Just keeping it here to show 
+        alternative approach.      
+    2. Use setInterval to refresh it every 'exchangeRateRefreshInterval'
+       which is set in development.json or test.json.
+*/
 export class ExchangeRateService {
   #exchangeRatesCache = {
     lastUpdatedTs: 0,
@@ -33,12 +43,15 @@ export class ExchangeRateService {
     await this.getRatesFor();
   };
 
-  // Fixer api base currency is EUR
   #formatApiResponse(data) {
     const sekPrice = data.rates[SEK_CODE];
     if (sekPrice == null) {
       throw new Error("SEK currency not found");
     }
+    /* 
+      Fixer api base currency is EUR, so convert all rates
+      to SEK for easy conversion on client-side.
+     */
     const adjustRate = ([currency, rate]) => {
       return [currency, rate / sekPrice];
     };
@@ -56,6 +69,10 @@ export class ExchangeRateService {
     return currentTs - lastUpdatedTs > this.cacheInterval;
   }
 
+  /* 
+    The currencies is not passed right now but earlier I 
+    had designed to get exchange rate only for selected countries.
+  */
   #filterByCurrencies(currencies) {
     return Promise.resolve({
       base: SEK_CODE,
@@ -87,6 +104,8 @@ export class ExchangeRateService {
           lastUpdatedTs: Date.now(),
           rates: this.#formatApiResponse(data),
         };
+
+        // Here I would use Subscription (pubSub) to refresh client side cache.
 
         return this.#filterByCurrencies(currencies);
       });

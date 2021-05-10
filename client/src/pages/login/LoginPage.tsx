@@ -28,7 +28,7 @@ export const LoginPage = ({ onLogin }: Props) => {
     event.preventDefault();
 
     login({ variables: { email, password } }).catch((error) => {
-      // Ignore
+      // TODO: error handling
     });
   };
 

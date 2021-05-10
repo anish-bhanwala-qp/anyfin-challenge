@@ -45,6 +45,7 @@ const convertToSek = (
   currencies: Array<Currency>,
   exchangeRates: Array<ExchnageRate>,
 ) => {
+  // TODO: handle a case where the exchangeRate is not found.
   return currencies.map((currency) => {
     const exchangeRate = exchangeRates.find(
       ({ name }) => name === currency.code,

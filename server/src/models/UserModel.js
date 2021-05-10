@@ -1,6 +1,7 @@
 const users = [
   {
     email: "a@a.com",
+    // Password is 12345678
     password: "$2b$10$CxkqtGJ5K9N84IGA38iHIetyDNaRiiB8C.M/90NDL9YYdpMJ4BNTq",
   },
 ];
